@@ -46,7 +46,7 @@ export default function Produtos() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await api.get("/products?page=1&limit=20");
+        const response = await api.get("/products?page=1&limit=100");
         let apiProducts: ApiProduct[] = [];
         if (Array.isArray(response.data)) {
           apiProducts = response.data;

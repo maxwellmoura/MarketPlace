@@ -63,7 +63,7 @@ export default function AdminPage() {
 
   const fetchProducts = async () => {
     try {
-      const res = await api.get("/products");
+      const res = await api.get("/products?page=1&limit=100");
       const list = res.data?.products || [];
       setProducts(list.map(normalizeProduct));
     } catch (err) {
