@@ -331,12 +331,22 @@ export default function AdminPage() {
 
             <label className="block mb-2">Preço:</label>
             <input
-              type="number"
+              type="text"
               className="w-full border p-2 mb-4"
               value={editingProduct.price}
-              onChange={(e) =>
-                setEditingProduct({ ...editingProduct, price: Number(e.target.value) })
-              }
+              onChange={(e) => {
+                const value = e.target.value;
+                // Permite apenas números e vírgula
+                if (value === '' || /^[0-9]*,?[0-9]*$/.test(value)) {
+                  // Converte vírgula para ponto para armazenar como número
+                  const numericValue = value.replace(',', '.');
+                  setEditingProduct({ 
+                    ...editingProduct, 
+                    price: numericValue === '' ? 0 : Number(numericValue) 
+                  });
+                }
+              }}
+              placeholder="Ex: 10,50"
             />
 
             <div className="flex justify-end gap-2">
