@@ -13,6 +13,15 @@ type Product = {
   price: number;
 };
 
+type ApiProduct = {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl?: string;
+  image?: string;
+  price: number;
+};
+
 type ProductForm = {
   id: string;
   name: string;
@@ -22,13 +31,23 @@ type ProductForm = {
   imageFile?: File | null;
 };
 
-const normalizeProduct = (p: Product): Product => ({
-  id: p.id,
-  name: p.name,
-  description: p.description,
-  imageUrl: p.imageUrl || "",
-  price: p.price,
-});
+const normalizeProduct = (p: ApiProduct): Product => {
+  let imageUrl = p.imageUrl || p.image || "";
+  
+  // Se a imageUrl não começar com http:// ou https://, adicionar a URL base do backend
+  if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    imageUrl = `${apiBaseUrl}/${imageUrl}`;
+  }
+  
+  return {
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    imageUrl: imageUrl,
+    price: p.price,
+  };
+};
 
 
 export default function AdminPage() {
@@ -102,7 +121,7 @@ export default function AdminPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setEditingProduct(prev => prev ? { ...prev, imageFile: file } : null);
+      setEditingProduct(prev => prev ? { ...prev, imageFile: file, imageUrl: '' } : null);
       
       // Criar preview da imagem
       const reader = new FileReader();
@@ -144,7 +163,14 @@ export default function AdminPage() {
               'Content-Type': 'multipart/form-data',
             },
           });
-          setProducts((prev) => [...prev, normalizeProduct(res.data)]);
+          console.log("Resposta do backend ao criar produto (com upload):", res.data);
+          const newProduct = normalizeProduct(res.data.product || res.data);
+          console.log("Produto normalizado (com upload):", newProduct);
+          setProducts((prev) => {
+            const updated = [...prev, newProduct];
+            console.log("Lista de produtos atualizada:", updated);
+            return updated;
+          });
         } else {
           const res = await api.post("/products", {
             name,
@@ -152,7 +178,14 @@ export default function AdminPage() {
             imageUrl: editingProduct.imageUrl,
             price,
           });
-          setProducts((prev) => [...prev, normalizeProduct(res.data)]);
+          console.log("Resposta do backend ao criar produto (com URL):", res.data);
+          const newProduct = normalizeProduct(res.data.product || res.data);
+          console.log("Produto normalizado (com URL):", newProduct);
+          setProducts((prev) => {
+            const updated = [...prev, newProduct];
+            console.log("Lista de produtos atualizada:", updated);
+            return updated;
+          });
         }
       } else {
         if (editingProduct.imageFile) {
@@ -168,8 +201,11 @@ export default function AdminPage() {
               'Content-Type': 'multipart/form-data',
             },
           });
+          console.log("Resposta do backend ao editar produto:", res.data);
+          const updatedProduct = normalizeProduct(res.data.product || res.data);
+          console.log("Produto normalizado:", updatedProduct);
           setProducts((prev) =>
-            prev.map((p) => (p.id === editingProduct.id ? normalizeProduct(res.data) : p))
+            prev.map((p) => (p.id === editingProduct.id ? updatedProduct : p))
           );
         } else {
           const res = await api.put(`/products/${editingProduct.id}`, {
@@ -179,8 +215,11 @@ export default function AdminPage() {
             imageUrl: editingProduct.imageUrl,
             price,
           });
+          console.log("Resposta do backend ao editar produto:", res.data);
+          const updatedProduct = normalizeProduct(res.data.product || res.data);
+          console.log("Produto normalizado:", updatedProduct);
           setProducts((prev) =>
-            prev.map((p) => (p.id === editingProduct.id ? normalizeProduct(res.data) : p))
+            prev.map((p) => (p.id === editingProduct.id ? updatedProduct : p))
           );
         }
       }
