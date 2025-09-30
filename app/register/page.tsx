@@ -33,7 +33,7 @@ export default function Register() {
     }
 
     try {
-      const response = await api.post("/auth/register", {
+      await api.post("/auth/register", {
         name: form.name,
         email: form.email,
         password: form.password,
@@ -57,10 +57,10 @@ export default function Register() {
   };
   function maskCPF(value: string) {
     return value
-      .replace(/\D/g, "") 
+      .replace(/\D/g, "")
       .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+      .replace(/(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+      .replace(/(\d{3})\.(\d{3})\.(\d{3})(\d{1,2})/, "$1.$2.$3-$4")
       .slice(0, 14);
   }
   function maskPhone(value: string) {
