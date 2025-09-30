@@ -61,9 +61,10 @@ export default function Login() {
         } else {
           setError("Falha no login. Tente novamente.");
         }
-      } catch (err: any) {
+      } catch (err) {
+        const error = err as { response?: { data?: { error?: string } } };
         console.error("Erro no login:", err);
-        setError(err.response?.data?.error || "E-mail ou senha inválidos!");
+        setError(error.response?.data?.error || "E-mail ou senha inválidos!");
       }
     });
   };

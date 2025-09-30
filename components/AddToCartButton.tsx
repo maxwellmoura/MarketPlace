@@ -1,15 +1,15 @@
 "use client";
 
-import { useCart } from "@/context/CartContext";
+import { useCart, Product } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
 type AddToCartButtonProps = {
-  product: any;
+  product: Product;
 };
 
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
-  const { addToCart, items } = useCart();
+  const { addToCart } = useCart();
   const { user } = useAuth();
   const router = useRouter();
 

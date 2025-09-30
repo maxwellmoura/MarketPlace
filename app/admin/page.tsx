@@ -22,11 +22,11 @@ type ProductForm = {
   imageFile?: File | null;
 };
 
-const normalizeProduct = (p: any): Product => ({
+const normalizeProduct = (p: Product): Product => ({
   id: p.id,
   name: p.name,
   description: p.description,
-  imageUrl: p.imageUrl || p.image || "",
+  imageUrl: p.imageUrl || "",
   price: p.price,
 });
 
@@ -188,13 +188,14 @@ export default function AdminPage() {
       setIsModalOpen(false);
       setEditingProduct(null);
       setImagePreview(null);
-    } catch (err: any) {
+    } catch (err) {
+      const error = err as { response?: { status?: number; data?: { message?: string } } };
       console.error("Erro ao salvar produto (detalhe):", err);
-      console.error("err.response?.status =>", err?.response?.status);
-      console.error("err.response?.data =>", err?.response?.data);
+      console.error("err.response?.status =>", error?.response?.status);
+      console.error("err.response?.data =>", error?.response?.data);
       alert(
         "Erro ao salvar produto. Verifique os dados e os logs do servidor.\n" +
-          (err?.response?.data?.message ? `Server: ${err.response.data.message}` : "")
+          (error?.response?.data?.message ? `Server: ${error.response.data.message}` : "")
       );
     }
   };
@@ -231,6 +232,7 @@ export default function AdminPage() {
            >
             <div className="flex items-center space-x-4">
                <div className="flex-shrink-0">
+                 {/* eslint-disable-next-line @next/next/no-img-element */}
                  <img
                    src={product.imageUrl || '/no-image.png'}
                    alt={product.name}
@@ -307,6 +309,7 @@ export default function AdminPage() {
             {imagePreview && (
               <div className="mb-4">
                 <label className="block mb-2">Preview:</label>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imagePreview}
                   alt="Preview"

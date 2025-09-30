@@ -16,7 +16,7 @@ type ApiProduct = {
   quantity?: number;
 };
 
-const normalizeProduct = (p: any): ApiProduct => ({
+const normalizeProduct = (p: ApiProduct): ApiProduct => ({
   id: p.id,
   name: p.name || p.title || "Produto sem nome",
   description: p.description || "",

@@ -17,8 +17,6 @@ export default function Register() {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [phone, setPhone] = useState("");
-  const [cpf, setCpf] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -54,7 +52,7 @@ export default function Register() {
         phone: "",
         cpf: "",
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setError("Erro ao cadastrar usuário.");
     }
