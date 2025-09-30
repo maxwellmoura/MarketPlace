@@ -19,7 +19,6 @@ type ApiProduct = {
 const normalizeProduct = (p: ApiProduct): ApiProduct => {
   let imageUrl = p.imageUrl || p.image || "/no-image.png";
   
-  // Se a imageUrl não começar com http:// ou https:// ou /, adicionar a URL base do backend
   if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://') && !imageUrl.startsWith('/')) {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
     imageUrl = `${apiBaseUrl}/${imageUrl}`;

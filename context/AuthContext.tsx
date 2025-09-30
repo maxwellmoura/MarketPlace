@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Carregar usuário do localStorage ao montar o componente
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -57,7 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isAdmin = () => user?.role === "ADMIN";
 
-  // Não renderizar até carregar o estado do localStorage
   if (loading) {
     return null;
   }

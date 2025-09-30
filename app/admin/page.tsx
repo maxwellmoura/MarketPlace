@@ -34,7 +34,6 @@ type ProductForm = {
 const normalizeProduct = (p: ApiProduct): Product => {
   let imageUrl = p.imageUrl || p.image || "";
   
-  // Se a imageUrl não começar com http:// ou https://, adicionar a URL base do backend
   if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
     const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     imageUrl = `${apiBaseUrl}/${imageUrl}`;
@@ -123,7 +122,6 @@ export default function AdminPage() {
     if (file) {
       setEditingProduct(prev => prev ? { ...prev, imageFile: file, imageUrl: '' } : null);
       
-      // Criar preview da imagem
       const reader = new FileReader();
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string);
@@ -163,14 +161,8 @@ export default function AdminPage() {
               'Content-Type': 'multipart/form-data',
             },
           });
-          console.log("Resposta do backend ao criar produto (com upload):", res.data);
           const newProduct = normalizeProduct(res.data.product || res.data);
-          console.log("Produto normalizado (com upload):", newProduct);
-          setProducts((prev) => {
-            const updated = [...prev, newProduct];
-            console.log("Lista de produtos atualizada:", updated);
-            return updated;
-          });
+          setProducts((prev) => [...prev, newProduct]);
         } else {
           const res = await api.post("/products", {
             name,
@@ -178,14 +170,8 @@ export default function AdminPage() {
             imageUrl: editingProduct.imageUrl,
             price,
           });
-          console.log("Resposta do backend ao criar produto (com URL):", res.data);
           const newProduct = normalizeProduct(res.data.product || res.data);
-          console.log("Produto normalizado (com URL):", newProduct);
-          setProducts((prev) => {
-            const updated = [...prev, newProduct];
-            console.log("Lista de produtos atualizada:", updated);
-            return updated;
-          });
+          setProducts((prev) => [...prev, newProduct]);
         }
       } else {
         if (editingProduct.imageFile) {
@@ -201,9 +187,7 @@ export default function AdminPage() {
               'Content-Type': 'multipart/form-data',
             },
           });
-          console.log("Resposta do backend ao editar produto:", res.data);
           const updatedProduct = normalizeProduct(res.data.product || res.data);
-          console.log("Produto normalizado:", updatedProduct);
           setProducts((prev) =>
             prev.map((p) => (p.id === editingProduct.id ? updatedProduct : p))
           );
@@ -215,9 +199,7 @@ export default function AdminPage() {
             imageUrl: editingProduct.imageUrl,
             price,
           });
-          console.log("Resposta do backend ao editar produto:", res.data);
           const updatedProduct = normalizeProduct(res.data.product || res.data);
-          console.log("Produto normalizado:", updatedProduct);
           setProducts((prev) =>
             prev.map((p) => (p.id === editingProduct.id ? updatedProduct : p))
           );
@@ -241,8 +223,7 @@ export default function AdminPage() {
 
   const deleteProduct = async (id: string) => {
     try {
-      const res = await api.delete(`/products/${id}`);
-      console.log("DELETE /products response:", res.status, res.data);
+      await api.delete(`/products/${id}`);
       setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Erro ao deletar produto", err);
@@ -271,7 +252,6 @@ export default function AdminPage() {
            >
             <div className="flex items-center space-x-4">
                <div className="flex-shrink-0">
-                 {/* eslint-disable-next-line @next/next/no-img-element */}
                  <img
                    src={product.imageUrl || '/no-image.png'}
                    alt={product.name}
@@ -348,7 +328,6 @@ export default function AdminPage() {
             {imagePreview && (
               <div className="mb-4">
                 <label className="block mb-2">Preview:</label>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imagePreview}
                   alt="Preview"
@@ -375,9 +354,7 @@ export default function AdminPage() {
               value={editingProduct.price}
               onChange={(e) => {
                 const value = e.target.value;
-                // Permite apenas números e vírgula
                 if (value === '' || /^[0-9]*,?[0-9]*$/.test(value)) {
-                  // Converte vírgula para ponto para armazenar como número
                   const numericValue = value.replace(',', '.');
                   setEditingProduct({ 
                     ...editingProduct, 

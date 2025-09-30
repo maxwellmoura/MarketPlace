@@ -20,7 +20,6 @@ export default function Register() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    console.log(form)
     setError(null);
     setSuccess(null);
   };
@@ -42,7 +41,6 @@ export default function Register() {
         cpf: form.cpf,
       });
 
-      console.log(response.data);
       setSuccess("Usuário cadastrado com sucesso!");
       setForm({
         name: "",

@@ -49,7 +49,6 @@ export default function Login() {
           email: form.email,
           password: form.password,
         });
-        console.log("Resposta do login:", response.data);
         if (response.data.accessToken) {
           login(response.data);
           if (response.data.user?.role === "ADMIN") {
